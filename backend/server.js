@@ -124,7 +124,13 @@ const upload = multer({ storage });
 // Upload API
 app.post("/upload", upload.single("photo"), (req, res) => {
   res.json({
-    imageUrl: `http://localhost:5000/uploads/${req.file.filename}`,
+    app.post("/upload", upload.single("photo"), (req, res) => {
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+  res.json({
+    imageUrl,
+  });
+});
   });
 });
 
@@ -134,6 +140,8 @@ app.get("/", (req, res) => {
 });
 
 // Start Server
-server.listen(5000, () => {
-  console.log("Server running on port 5000");
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
 });

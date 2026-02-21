@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
-const Chat = require("../models/Chat");
-const Message = require("../models/Message");
+const Chat = require("../models/chat");
+const Message = require("../models/message");
 
 const router = express.Router();
 
