@@ -5,9 +5,16 @@ const { Server } = require("socket.io");
 const multer = require("multer");
 const path = require("path");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary").v2;
 
 
 require("dotenv").config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Routes
 const authRoutes = require("./routes/auth");
@@ -109,29 +116,29 @@ io.on("connection", (socket) => {
   });
 });
 
-// Multer Storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
+// Multer Memory Storage for Cloudinary
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Upload API
-app.post("/upload", upload.single("photo"), (req, res) => {
-  res.json({
-    app.post("/upload", upload.single("photo"), (req, res) => {
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+app.post("/upload", upload.single("photo"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No image provided" });
+  }
 
-  res.json({
-    imageUrl,
-  });
-});
-  });
+  try {
+    const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+    const result = await cloudinary.uploader.upload(base64Image, {
+      folder: "realtime_chat_app",
+    });
+
+    res.json({
+      imageUrl: result.secure_url,
+    });
+  } catch (err) {
+    console.error("Cloudinary upload error:", err);
+    res.status(500).json({ error: "Image upload failed" });
+  }
 });
 
 // Default API
