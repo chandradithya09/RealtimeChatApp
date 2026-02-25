@@ -33,20 +33,18 @@ function Login() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        background: "#0f172a",
-        fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+        background: "var(--bg-main)",
       }}
     >
       <div
         style={{
-          background: "#1e293b",
+          background: "var(--bg-secondary)",
           padding: "40px",
           borderRadius: "16px",
-          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
+          boxShadow: "var(--shadow-card)",
           width: "100%",
           maxWidth: "400px",
           textAlign: "center",
-          color: "white",
         }}
       >
         <h2 style={{ marginBottom: "24px", fontSize: "28px", fontWeight: "bold" }}>
@@ -54,7 +52,7 @@ function Login() {
         </h2>
 
         <div style={{ marginBottom: "16px", textAlign: "left" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "#cbd5e1" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "var(--text-secondary)" }}>
             Email
           </label>
           <input
@@ -66,9 +64,9 @@ function Login() {
               width: "100%",
               padding: "12px 16px",
               borderRadius: "8px",
-              border: "1px solid #334155",
-              background: "#0f172a",
-              color: "white",
+              border: "1px solid var(--border-color)",
+              background: "var(--bg-tertiary)",
+              color: "var(--text-primary)",
               fontSize: "16px",
               outline: "none",
               boxSizing: "border-box",
@@ -77,7 +75,7 @@ function Login() {
         </div>
 
         <div style={{ marginBottom: "24px", textAlign: "left" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "#cbd5e1" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "var(--text-secondary)" }}>
             Password
           </label>
           <input
@@ -89,9 +87,9 @@ function Login() {
               width: "100%",
               padding: "12px 16px",
               borderRadius: "8px",
-              border: "1px solid #334155",
-              background: "#0f172a",
-              color: "white",
+              border: "1px solid var(--border-color)",
+              background: "var(--bg-tertiary)",
+              color: "var(--text-primary)",
               fontSize: "16px",
               outline: "none",
               boxSizing: "border-box",
@@ -104,8 +102,8 @@ function Login() {
           style={{
             width: "100%",
             padding: "14px",
-            background: "#3b82f6",
-            color: "white",
+            background: "var(--accent-primary)",
+            color: "#ffffff",
             border: "none",
             borderRadius: "8px",
             fontSize: "16px",
@@ -114,17 +112,17 @@ function Login() {
             transition: "background 0.3s",
             marginBottom: "16px",
           }}
-          onMouseOver={(e) => (e.target.style.background = "#2563eb")}
-          onMouseOut={(e) => (e.target.style.background = "#3b82f6")}
+          onMouseOver={(e) => (e.target.style.background = "var(--accent-primary-hover)")}
+          onMouseOut={(e) => (e.target.style.background = "var(--accent-primary)")}
         >
           Login
         </button>
 
-        <p style={{ fontSize: "14px", color: "#94a3b8", marginTop: "16px" }}>
+        <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "16px" }}>
           Don't have an account?{" "}
           <span
             onClick={() => navigate("/register")}
-            style={{ color: "#3b82f6", cursor: "pointer", fontWeight: "bold" }}
+            style={{ color: "var(--accent-primary)", cursor: "pointer", fontWeight: "bold" }}
           >
             Register
           </span>

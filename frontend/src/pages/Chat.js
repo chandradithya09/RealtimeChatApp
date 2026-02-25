@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
+import { ThemeContext } from "../ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 const socket = io(API_URL);
@@ -18,6 +20,8 @@ function Chat() {
   const [typingStatus, setTypingStatus] = useState(false);
 
   const bottomRef = useRef(null);
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -177,17 +181,16 @@ function Chat() {
       style={{
         display: "flex",
         height: "100vh",
-        fontFamily: "Segoe UI, Arial",
-        background: "#0f172a",
-        color: "white",
+        background: "var(--bg-main)",
+        color: "var(--text-primary)",
       }}
     >
       {/* Sidebar */}
       <div
         style={{
           width: "30%",
-          background: "#111827",
-          borderRight: "1px solid #334155",
+          background: "var(--bg-secondary)",
+          borderRight: "1px solid var(--border-color)",
           display: "flex",
           flexDirection: "column",
         }}
@@ -198,27 +201,61 @@ function Chat() {
             padding: "18px",
             fontSize: "18px",
             fontWeight: "bold",
-            background: "#1e293b",
+            background: "var(--bg-tertiary)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          Chat App
-          <button
-            onClick={logout}
-            style={{
-              padding: "6px 12px",
-              background: "#ef4444",
-              border: "none",
-              borderRadius: "8px",
-              color: "white",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            Logout
-          </button>
+          <div>
+            Chat App
+            <button
+              onClick={toggleTheme}
+              style={{
+                marginLeft: "10px",
+                padding: "4px 8px",
+                background: "var(--bg-main)",
+                color: "var(--text-primary)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontSize: "12px",
+              }}
+            >
+              {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={() => navigate("/profile")}
+              style={{
+                padding: "6px 12px",
+                background: "var(--accent-primary)",
+                border: "none",
+                borderRadius: "8px",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: "bold",
+                marginRight: "8px",
+              }}
+            >
+              My Profile
+            </button>
+            <button
+              onClick={logout}
+              style={{
+                padding: "6px 12px",
+                background: "var(--accent-danger)",
+                border: "none",
+                borderRadius: "8px",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Users list */}
@@ -229,9 +266,10 @@ function Chat() {
               style={{
                 padding: "14px",
                 cursor: "pointer",
-                borderBottom: "1px solid #334155",
+                borderBottom: "1px solid var(--border-color)",
                 background:
-                  selectedUser?._id === u._id ? "#2563eb" : "transparent",
+                  selectedUser?._id === u._id ? "var(--bg-tertiary)" : "transparent",
+                borderLeft: selectedUser?._id === u._id ? "4px solid var(--accent-primary)" : "4px solid transparent",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -246,7 +284,8 @@ function Chat() {
                     width: "42px",
                     height: "42px",
                     borderRadius: "50%",
-                    border: "2px solid #475569",
+                    border: "2px solid var(--border-color)",
+                    objectFit: "cover",
                   }}
                 />
 
@@ -255,7 +294,7 @@ function Chat() {
                     {u.name}
                   </div>
 
-                  <div style={{ fontSize: "12px", color: "#cbd5e1" }}>
+                  <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
                     {isOnline(u._id) ? "🟢 Online" : "⚫ Offline"}
                   </div>
                 </div>
@@ -270,7 +309,7 @@ function Chat() {
                   padding: "6px 10px",
                   border: "none",
                   borderRadius: "8px",
-                  background: "#dc2626",
+                  background: "var(--accent-danger)",
                   color: "white",
                   cursor: "pointer",
                   fontSize: "12px",
@@ -290,8 +329,8 @@ function Chat() {
         <div
           style={{
             padding: "18px",
-            background: "#1e293b",
-            borderBottom: "1px solid #334155",
+            background: "var(--bg-tertiary)",
+            borderBottom: "1px solid var(--border-color)",
             fontWeight: "bold",
             fontSize: "18px",
             display: "flex",
@@ -302,10 +341,10 @@ function Chat() {
           {selectedUser ? (
             <div>
               {selectedUser.name}{" "}
-              <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
                 ({isOnline(selectedUser._id) ? "Online" : "Offline"})
               </span>
-              <div style={{ fontSize: "12px", color: "#22c55e" }}>
+              <div style={{ fontSize: "12px", color: "var(--accent-success)" }}>
                 {typingStatus ? "Typing..." : ""}
               </div>
             </div>
@@ -321,7 +360,8 @@ function Chat() {
                 borderRadius: "10px",
                 border: "none",
                 cursor: "pointer",
-                background: "#f59e0b",
+                background: "var(--accent-warning)",
+                color: "#1e293b",
                 fontWeight: "bold",
               }}
             >
@@ -336,7 +376,7 @@ function Chat() {
             flex: 1,
             padding: "18px",
             overflowY: "auto",
-            background: "#0b1220",
+            background: "var(--bg-chat)",
           }}
         >
           {selectedUser ? (
@@ -355,11 +395,13 @@ function Chat() {
                 >
                   <div
                     style={{
-                      background: isMe ? "#3b82f6" : "#334155",
+                      background: isMe ? "var(--accent-primary)" : "var(--bg-tertiary)",
                       padding: "10px 14px",
                       borderRadius: "14px",
                       maxWidth: "60%",
-                      color: "white",
+                      color: isMe ? "#ffffff" : "var(--text-primary)",
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                      border: isMe ? "none" : "1px solid var(--border-color)",
                     }}
                   >
                     {msg.text && <p style={{ margin: 0 }}>{msg.text}</p>}
@@ -380,7 +422,7 @@ function Chat() {
               );
             })
           ) : (
-            <h2 style={{ textAlign: "center", color: "#94a3b8" }}>
+            <h2 style={{ textAlign: "center", color: "var(--text-muted)" }}>
               Select a user from left panel
             </h2>
           )}
@@ -393,8 +435,8 @@ function Chat() {
           <div
             style={{
               padding: "12px",
-              background: "#111827",
-              borderTop: "1px solid #334155",
+              background: "var(--bg-secondary)",
+              borderTop: "1px solid var(--border-color)",
               display: "flex",
               gap: "10px",
               alignItems: "center",
@@ -412,19 +454,39 @@ function Chat() {
                 flex: 1,
                 padding: "12px",
                 borderRadius: "12px",
-                border: "1px solid #334155",
+                border: "1px solid var(--border-color)",
                 outline: "none",
-                background: "#0f172a",
-                color: "white",
+                background: "var(--bg-main)",
+                color: "var(--text-primary)",
               }}
             />
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setPhoto(e.target.files[0])}
-              style={{ color: "white" }}
-            />
+            {/* Redesigned File Upload Button */}
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "44px",
+                height: "44px",
+                background: photo ? "var(--accent-success)" : "var(--bg-tertiary)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "50%",
+                cursor: "pointer",
+                color: photo ? "white" : "var(--text-primary)",
+                fontSize: "20px",
+                transition: "background 0.3s",
+              }}
+              title={photo ? "Image Selected" : "Upload Image"}
+            >
+              {photo ? "✓" : "📷"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setPhoto(e.target.files[0])}
+                style={{ display: "none" }}
+              />
+            </label>
 
             <button
               onClick={sendMessage}
@@ -433,8 +495,8 @@ function Chat() {
                 borderRadius: "12px",
                 border: "none",
                 cursor: "pointer",
-                background: "#22c55e",
-                color: "black",
+                background: "var(--accent-primary)",
+                color: "white",
                 fontWeight: "bold",
               }}
             >
