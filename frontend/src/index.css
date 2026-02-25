@@ -1,45 +1,47 @@
 :root {
-  /* Default Dark Theme Variables */
-  --bg-main: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #111827;
-  --bg-chat: #0b1220;
+  /* Default Dark Theme Variables (Netflix Style) */
+  --bg-main: #141414;
+  --bg-secondary: #000000;
+  --bg-tertiary: #2b2b2b;
+  --bg-chat: #141414;
   --text-primary: #ffffff;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --border-color: #334155;
-  
-  --accent-primary: #3b82f6;
-  --accent-primary-hover: #2563eb;
+  --text-secondary: #b3b3b3;
+  --text-muted: #808080;
+  --border-color: #333333;
+
+  --accent-primary: #E50914;
+  --accent-primary-hover: #f40612;
   --accent-success: #22c55e;
   --accent-success-hover: #16a34a;
-  --accent-danger: #ef4444;
-  --accent-danger-hover: #dc2626;
+  --accent-danger: #E50914;
+  --accent-danger-hover: #b81d24;
   --accent-warning: #f59e0b;
-  
-  --shadow-card: 0 10px 25px rgba(0, 0, 0, 0.5);
+
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.8);
+  --transition-speed: 0.3s;
 }
 
 [data-theme="light"] {
-  /* Vibrant Light Theme Variables */
+  /* Vibrant Light Theme Variables (Netflix Red Accent) */
   --bg-main: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
-  --bg-chat: #e2e8f0;
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --border-color: #cbd5e1;
-  
-  --accent-primary: #4f46e5;
-  --accent-primary-hover: #4338ca;
+  --bg-chat: #f8fafc;
+  --text-primary: #141414;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  --border-color: #e5e5e5;
+
+  --accent-primary: #E50914;
+  --accent-primary-hover: #c40812;
   --accent-success: #10b981;
   --accent-success-hover: #059669;
-  --accent-danger: #f43f5e;
-  --accent-danger-hover: #e11d48;
+  --accent-danger: #E50914;
+  --accent-danger-hover: #c40812;
   --accent-warning: #f59e0b;
-  
-  --shadow-card: 0 10px 25px rgba(0, 0, 0, 0.05);
+
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.3s;
 }
 
 body {
@@ -51,7 +53,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-main);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
 code {
@@ -67,13 +69,16 @@ code {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }

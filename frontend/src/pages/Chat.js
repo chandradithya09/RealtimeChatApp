@@ -19,6 +19,9 @@ function Chat() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [typingStatus, setTypingStatus] = useState(false);
 
+  const [lastMessages, setLastMessages] = useState({});
+  const [viewedChats, setViewedChats] = useState({});
+
   const bottomRef = useRef(null);
   const { theme, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -40,6 +43,17 @@ function Chat() {
     const fetchUsers = async () => {
       const res = await axios.get(`${API_URL}/api/user`);
       setUsers(res.data.filter((u) => u._id !== (user.id || user._id)));
+
+      try {
+        const msgsRes = await axios.get(`${API_URL}/api/chat/last-messages/${user.id || user._id}`);
+        const msgsMap = {};
+        msgsRes.data.forEach((m) => {
+          if (m.lastMessage) msgsMap[m.userId] = m.lastMessage;
+        });
+        setLastMessages(msgsMap);
+      } catch (err) {
+        console.error("Failed to load last messages", err);
+      }
     };
 
     fetchUsers();
@@ -52,6 +66,21 @@ function Chat() {
       if (msg.chatId === chatId) {
         setMessages((prev) => [...prev, msg]);
       }
+
+      setLastMessages((prev) => ({
+        ...prev,
+        [msg.senderId]: {
+          text: msg.text,
+          image: msg.image,
+          senderId: msg.senderId,
+          createdAt: msg.createdAt || new Date().toISOString()
+        }
+      }));
+
+      setViewedChats((prev) => ({
+        ...prev,
+        [msg.senderId]: msg.chatId === chatId
+      }));
     });
 
     socket.on("typing", () => {
@@ -77,8 +106,17 @@ function Chat() {
     return onlineUsers.includes(id);
   };
 
+  const isUnread = (u) => {
+    if (viewedChats[u._id] !== undefined) {
+      return !viewedChats[u._id];
+    }
+    const lastMsg = lastMessages[u._id];
+    return lastMsg && lastMsg.senderId !== (user.id || user._id);
+  };
+
   const openChat = async (u) => {
     setSelectedUser(u);
+    setViewedChats((prev) => ({ ...prev, [u._id]: true }));
 
     const res = await axios.post(`${API_URL}/api/chat/create`, {
       userId1: user.id || user._id,
@@ -120,6 +158,16 @@ function Chat() {
       text: text,
       image: imageUrl,
     });
+
+    setLastMessages((prev) => ({
+      ...prev,
+      [selectedUser._id]: {
+        text: text,
+        image: imageUrl,
+        senderId: user.id || user._id,
+        createdAt: new Date().toISOString()
+      }
+    }));
 
     socket.emit("stopTyping", { chatId });
 
@@ -273,10 +321,17 @@ function Chat() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                transition: "all var(--transition-speed) ease",
+              }}
+              onMouseOver={(e) => {
+                if (selectedUser?._id !== u._id) e.currentTarget.style.background = "var(--bg-tertiary)";
+              }}
+              onMouseOut={(e) => {
+                if (selectedUser?._id !== u._id) e.currentTarget.style.background = "transparent";
               }}
               onClick={() => openChat(u)}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%" }}>
                 <img
                   src={u.profilePic || "https://via.placeholder.com/40"}
                   alt="pic"
@@ -289,13 +344,20 @@ function Chat() {
                   }}
                 />
 
-                <div>
-                  <div style={{ fontWeight: "bold", fontSize: "15px" }}>
-                    {u.name}
+                <div style={{ flex: 1, overflow: "hidden" }}>
+                  <div style={{ fontWeight: isUnread(u) ? "900" : "500", fontSize: "15px" }}>
+                    {u.name} {isOnline(u._id) && <span style={{ color: "var(--accent-success)", fontSize: "10px", marginLeft: "4px" }}>●</span>}
                   </div>
 
-                  <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                    {isOnline(u._id) ? "🟢 Online" : "⚫ Offline"}
+                  <div style={{
+                    fontSize: "13px",
+                    color: isUnread(u) ? "var(--text-primary)" : "var(--text-muted)",
+                    fontWeight: isUnread(u) ? "bold" : "normal",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}>
+                    {lastMessages[u._id] ? (lastMessages[u._id].text || "📷 Image") : "No messages yet"}
                   </div>
                 </div>
               </div>
@@ -314,7 +376,11 @@ function Chat() {
                   cursor: "pointer",
                   fontSize: "12px",
                   fontWeight: "bold",
+                  marginLeft: "10px",
+                  transition: "background var(--transition-speed) ease",
                 }}
+                onMouseOver={(e) => (e.target.style.background = "var(--accent-danger-hover)")}
+                onMouseOut={(e) => (e.target.style.background = "var(--accent-danger)")}
               >
                 Delete
               </button>
